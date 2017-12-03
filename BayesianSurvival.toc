@@ -1,0 +1,7 @@
+\beamer@endinputifotherversion {3.36pt}
+\beamer@sectionintoc {1}{The Bayesian Paradigm}{4}{0}{1}
+\beamer@sectionintoc {2}{MCMC Posterior Sampling}{7}{0}{2}
+\beamer@sectionintoc {3}{Power Priors}{14}{0}{3}
+\beamer@sectionintoc {4}{Bayesian Parametric Models}{18}{0}{4}
+\beamer@sectionintoc {5}{Conclusion}{24}{0}{5}
+\beamer@sectionintoc {6}{References}{27}{0}{6}

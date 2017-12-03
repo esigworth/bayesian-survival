@@ -1,0 +1,16 @@
+\frametitle{Gibbs Sampler Example: R Code\footnotemark}
+\begin{verbatim}
+n <- 20; a <- 4; b <- 6 #setup parameters
+
+it <- 1500 #number of iterations
+d <- rep(NA,it); theta <- rep(NA,it)
+d[1] <- 1; theta[1] <- 0.5 # set arbitrary initial values
+
+# Perform Gibbs iterations
+for (i in 2:it)
+{
+  d[i] <- rbinom(1,size=n,prob=th[i-1])
+  theta[i] <- rbeta(1,a+d[i],b+n-d[i])
+}
+\end{verbatim}
+\footnotetext[3]{Huerta (2012)}
