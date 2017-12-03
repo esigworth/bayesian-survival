@@ -1,0 +1,87 @@
+\documentclass{beamer}
+\usetheme{Berlin}
+\usecolortheme{dolphin}
+
+\title{An Introduction to Bayesian Methods for Survival Analysis}
+\author{Sarah Lotspeich, Elizabeth Sigworth}
+\institute{Vanderbilt University}
+\date{5 December 2017}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Outline}
+\tableofcontents
+\end{frame}
+
+\section{The Bayesian Paradigm}
+\begin{frame}
+\frametitle{A Refresher on Posterior Distributions}
+Specify a probability model for the observed data given a vector of unknown parameters $\pmb{\theta}$, leading to a likelihood function $L(\pmb{\theta}|\text{data})$. Assume $\pmb{\theta}$ is random and has \underline{prior distribution} $\pi(\pmb{\theta})$. Inference concerning $\pmb{\theta}$ based on prior distribution is obtained from Bayes' Theorem. 
+$$\pi(\pmb{\theta}|\text{data}) = \frac{L(\pmb{\theta}|\text{data})\pi(\pmb{\theta})}{\int_{\Theta}L(\pmb{\theta}|\text{data})\pi(\pmb{\theta}) d\pmb{\theta}}$$
+where $\Theta$ denotes the parameter space of $\pmb{\theta}$. \footnotemark
+\begin{itemize}
+\item Note: the denominator here is the \underline{marginal distribution} of the data, which often does not have a closed form. 
+\item Without this, it is challenging to analytically solve for $\pi(\pmb{\theta}|\text{data})$. 
+\end{itemize}
+\footnotetext[1]{Ibrahim, et al. (2001)}
+\end{frame}
+
+\begin{frame}
+\frametitle{Connecting the Prior and Posterior}
+We can see that $\pi(\pmb{\theta}|\text{data})$ is proportional to the likelihood $L(\pmb{\theta}|\text{data})$ multiplied by the prior $\pi(\pmb{\theta})$
+$$\pi(\pmb{\theta}|\text{data}) \propto L(\pmb{\theta}|\text{data})\pi(\pmb{\theta})$$
+\begin{itemize}
+\item Contributions from the data and the prior through the likelihood and prior distributions, respectively. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Problem with Marginal Distributions}
+Methods to sample from the posterior distribution without knowing the marginal include Gibbs sampler and other Markov chain Monte Carlo sampling algorithms. 
+\begin{itemize}
+\item The idea in Gibbs sampling is to generate posterior samples by sweeping through each variable (or block of variables) to sample from its conditional distribution with the remaining variables fixed to their current values.\footnotemark
+\end{itemize}
+\footnotetext[2]{Yildirim (2012)}
+\end{frame}
+
+\begin{frame}
+\frametitle{Gibbs sampler}
+We have $\pmb{\theta} = (\theta_1, \theta_2, \ldots, \theta_p)'$ be a $p$-dimensional vector of parameters, and $\pi(\pmb{\theta}|\text{data})$ is the posterior given data. 
+\begin{enumerate}
+\item[Step 0.] Choose an arbitrary starting point $\pmb{\theta}_{0} = (\theta_{1,0}, \theta_{2,0}, \ldots, \theta_{p,0})'$, and set $i = 0$.
+\item [Step 1.] Generate $\pmb{\theta}_{i+1} = (\theta_{1,i+1}, \theta_{2,i+1}, \ldots, \theta_{p,i+1})'$ as follows:
+	\begin{itemize}
+	\item Generate $\pmb{\theta}_{1,i+1} \sim \pi(\theta_1|\theta_{2,i}, \ldots, \theta{p,i},\text{data})$
+	\item Generate $\pmb{\theta}_{2,i+1} \sim \pi(\theta_2|\theta_{1,i+1}, \theta_{3,i}, \ldots, \theta{p,i},\text{data})$
+	\item $\vdots$
+	\item Generate $\pmb{\theta}_{p,i+1} \sim \pi(\theta_p|\theta_{1,i+1}, \theta_{2,i+1}, \ldots, \theta_{p-1,i+1}, \text{data})$
+	\end{itemize}
+\item [Step 2.] Set $i = i+1$, and go to Step 1.
+Stop when $\pmb{\theta} = (\theta_1, \theta_2, \ldots, \theta_p)'$ converges.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Why Bayes?}
+\end{frame}
+
+\section{Conclusion}
+\begin{frame}
+Questions?
+\end{frame}
+
+\section{References}
+\begin{frame}
+\frametitle{References}
+\begin{enumerate}
+\item Ibrahim, Joseph George, et al. Bayesian Survival Analysis. Springer, 2010.
+\item Yildirim, Ilker. Bayesian Inference: Gibbs Sampling. 2012, Bayesian Inference: Gibbs Sampling.
+\end{enumerate}
+\end{frame}
+
+\end{document}
