@@ -1,7 +1,7 @@
 \documentclass{beamer}
 \usetheme{Berlin}
 \usecolortheme{dolphin}
-\usepackage{color}
+\usepackage{color, graphicx}
 
 \title{An Introduction to Bayesian Methods for Survival Analysis}
 \author{Sarah Lotspeich, Elizabeth Sigworth}
@@ -87,6 +87,44 @@ We have $\pmb{\theta} = (\theta_1, \theta_2, \ldots, \theta_p)'$ be a $p$-dimens
 Stop when $\pmb{\theta} = (\theta_1, \theta_2, \ldots, \theta_p)'$ converges.\footnotemark[1]
 \end{enumerate}
 \footnotetext[1]{Ibrahim, et al. (2001)}
+\end{frame}
+
+\begin{frame}
+\frametitle{Gibbs Sampler Example: Setup}
+Consider 20 subjects in an observational study. Denote the number dead due to natural causes as random variable $D \sim Bin(20,\theta)$.  Suppose a previous study found that, on average, $40\%$ of people die due to natural causes. Based on this, we impose a beta prior on $\theta$, i.e. $\theta \sim Beta(a,b)$. We choose parameters $a$ and $b$ such that 
+\begin{center}
+$E(\theta) = \frac{a}{a+b} = 0.40$
+\end{center}
+This gives us $a = 4$ and $b = 6$. We want to be able to sample from the posterior distribution for $\theta|\text{data}$. 
+\end{frame}
+
+\begin{frame}
+\frametitle{Gibbs Sampler Example: Posterior Distribution}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Gibbs Sampler Example: R Code}
+\begin{verbatim}
+n <- 20; a <- 4; b <- 6 #setup parameters
+
+it <- 1500 #number of iterations
+x= rep(NA,it); th=rep(NA,it) 
+x[1]=1; th[1]=0.5 # set arbitrary initial values
+
+# Perform Gibbs iterations
+for (i in 2:it)
+{
+  x[i] =rbinom(1,size=n,prob=th[i-1])
+  th[i] = rbeta(1,a+x[i],b+n-x[i])
+}
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+\includegraphics[scale=0.35]{Rplot.jpeg}
+\end{center}
 \end{frame}
 
 \section{Power Priors}
@@ -178,11 +216,6 @@ Based on the posterior distribution $\lambda|\text{data} \sim Gamma(\alpha_0 + d
 \item $\text{E}(\lambda|\text{data}) = \frac{\alpha_0 + d}{\lambda_0 + \sum_{i=1}^n x_i}$
 \item $\text{Var}(\lambda|\text{data}) = \frac{\alpha_0 + d}{(\lambda_0 + \sum_{i=1}^n x_i)^2}$
 \end{itemize} 
-\end{frame}
-
-\section{Bayesian Semiparametric Models}
-\begin{frame}
-
 \end{frame}
 
 \section{Questions}
