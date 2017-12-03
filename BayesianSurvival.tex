@@ -100,25 +100,32 @@ This gives us $a = 4$ and $b = 6$. We want to be able to sample from the posteri
 
 \begin{frame}
 \frametitle{Gibbs Sampler Example: Posterior Distribution}
-
+For a beta-binomial model, we have the following conjugate posterior
+\begin{eqnarray*}
+\pi(\theta|D) &=& \frac{f(d;\theta)\pi(\theta)}{f(d)} \\
+&=& \frac{{20 \choose d}\theta^{d}(1-\theta)^{20-d} \frac{\Gamma(4 + 6)}{\Gamma(4)\Gamma(6)}\theta^{4-1}(1-\theta)^{6-1}}{{20 \choose d} \frac{\Gamma(4 + 6)}{\Gamma(4)\Gamma(6)} \frac{\Gamma(4 + d)\Gamma(6 + 20 - d)}{\Gamma(4+6+20)}} \\
+&=& \frac{\Gamma(4+6+20)}{\Gamma(4 + d)\Gamma(6 + 20 - d)}\theta^{4+d-1}(1-\theta)^{26-d} 
+\end{eqnarray*}
+Which we recognize as posterior distribution $\theta|D \sim Beta(4+d, 26-d)$. 
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Gibbs Sampler Example: R Code}
+\frametitle{Gibbs Sampler Example: R Code\footnotemark}
 \begin{verbatim}
 n <- 20; a <- 4; b <- 6 #setup parameters
 
 it <- 1500 #number of iterations
-x= rep(NA,it); th=rep(NA,it) 
-x[1]=1; th[1]=0.5 # set arbitrary initial values
+d= rep(NA,it); theta=rep(NA,it) 
+d[1]=1; theta[1]=0.5 # set arbitrary initial values
 
 # Perform Gibbs iterations
 for (i in 2:it)
 {
-  x[i] =rbinom(1,size=n,prob=th[i-1])
-  th[i] = rbeta(1,a+x[i],b+n-x[i])
+  d[i] =rbinom(1,size=n,prob=th[i-1])
+  theta[i] = rbeta(1,a+d[i],b+n-d[i])
 }
 \end{verbatim}
+\footnotetext[3]{Huerta (2012)}
 \end{frame}
 
 \begin{frame}
@@ -232,6 +239,7 @@ Questions?
 \begin{enumerate}
 \item[1] Ibrahim, Joseph George, et al. Bayesian Survival Analysis. Springer, 2010.
 \item[2] Yildirim, Ilker. Bayesian Inference: Gibbs Sampling. 2012, Bayesian Inference: Gibbs Sampling.
+\item[3] Huerta, Gabriel. Some Examples on Gibbs Sampling and Metropolis-Hastings methods. 2012, Some Examples on Gibbs Sampling and Metropolis-Hastings methods. 
 \end{enumerate}
 \end{frame}
 
