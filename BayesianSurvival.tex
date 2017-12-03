@@ -1,6 +1,7 @@
 \documentclass{beamer}
 \usetheme{Berlin}
 \usecolortheme{dolphin}
+\usepackage{color}
 
 \title{An Introduction to Bayesian Methods for Survival Analysis}
 \author{Sarah Lotspeich, Elizabeth Sigworth}
@@ -16,6 +17,15 @@
 \begin{frame}
 \frametitle{Outline}
 \tableofcontents
+\end{frame}
+
+\begin{frame}[c]
+\begin{center}
+\Huge
+``Be Bayesian or go home.''  
+\huge
+-Dr. Frank Harrell, 2017
+\end{center}
 \end{frame}
 
 \section{The Bayesian Paradigm}
@@ -41,6 +51,18 @@ $$\pi(\pmb{\theta}|\text{data}) \propto L(\pmb{\theta}|\text{data})\pi(\pmb{\the
 \end{frame}
 
 \begin{frame}
+\frametitle{Why Bayes?}
+\begin{itemize}
+\item Historical data formally incorporated into current analysis through \color{orange} power prior\color{black}.
+\item Model comparisons via \color{orange} Bayes Factors\color{black}.
+$$BF_{\text{model A}, \text{model B}} = \frac{P(\text{data}|\text{model A})}{P(\text{data}|\text{model B})}$$ 
+\item \color{orange}Missing values \color{black}treated as parameters. 
+\item MCMC sampling techniques allow us to make exact inference for \color{orange}any sample size \color{black}without relying on asymptotic approximations. 
+\end{itemize}
+\end{frame}
+
+\section{MCMC Posterior Sampling}
+\begin{frame}
 \frametitle{The Problem with Marginal Distributions}
 Methods to sample from the posterior distribution without knowing the marginal include Gibbs sampler and other Markov chain Monte Carlo sampling algorithms. 
 \begin{itemize}
@@ -62,25 +84,121 @@ We have $\pmb{\theta} = (\theta_1, \theta_2, \ldots, \theta_p)'$ be a $p$-dimens
 	\item Generate $\pmb{\theta}_{p,i+1} \sim \pi(\theta_p|\theta_{1,i+1}, \theta_{2,i+1}, \ldots, \theta_{p-1,i+1}, \text{data})$
 	\end{itemize}
 \item [Step 2.] Set $i = i+1$, and go to Step 1.
-Stop when $\pmb{\theta} = (\theta_1, \theta_2, \ldots, \theta_p)'$ converges.
+Stop when $\pmb{\theta} = (\theta_1, \theta_2, \ldots, \theta_p)'$ converges.\footnotemark[1]
 \end{enumerate}
+\footnotetext[1]{Ibrahim, et al. (2001)}
+\end{frame}
+
+\section{Power Priors}
+\begin{frame}
+\frametitle{We've Got the Power [Prior]}
+The \underline{power prior} is defined to be the likelihood function based on historical data raised to a power $a_{0}$ where $0 \leq a_0 \leq 1$. 
+\begin{itemize}
+\item Scalar parameter $a_0$ controls the influence of the historical data on the current data.  
+\end{itemize}
+The power prior distribution of $\pmb{\theta}$ is 
+\begin{center}
+$\pi(\pmb{\theta}|\text{data}_0, a_0) \propto L(\pmb{\theta}|\text{data}_0)^{a_0}\pi_0(\pmb{\theta}|c_{0})$
+\end{center}
+\begin{itemize}
+\item $\text{data}_0$: historical data from a similar previous study 
+\item $a_0:$ relative precision parameter for historical data $\text{data}_0$
+\item $c_0$: a specified hyperparameter for the initial prior that controls the impact of $\pi_0(\pmb{\theta}|c_{0})$ on the entire prior $\pi(\pmb{\theta}|\text{data})$
+\end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Why Bayes?}
+\frametitle{Controlling the Influence of Past Data}
+\begin{itemize}
+\item When \color{orange}$a_0 = 1$\color{black}, the power prior distribution corresponds to the posterior distribution of $\pmb{\theta}$ from the historical study (no change for current study).
+\item When \color{orange}$a_0 = 0$\color{black}, the power prior distribution does not depend on the historical data at all (i.e. no incorporation of historical data for current study). 
+\item Thus, $a_0$ allows the investigator to select the influence of historical data on the current study. 
+	\begin{itemize}
+	\item Want $a_0$ closer to 1 when the studies are very similar. 
+	\item Want $a_0$ closer to 0 when sample sizes are different or there is heterogeneity between studies. 
+	\end{itemize} 
+\end{itemize}
 \end{frame}
 
-\section{Conclusion}
 \begin{frame}
-Questions?
+\frametitle{Hierarchical Power Prior Specification}
+Incorporate a prior for $a_0$, $\pi(a_0|\pmb{\gamma}_0)$, into the prior for $\pmb{\theta}|\text{data}_0, a_0$ to get
+\begin{center}
+$\pi(\pmb{\theta}, a_0|\text{data}_0) \propto L(\pmb{\theta}|\text{data}_0)^{a_0}\pi_0(\pmb{\theta}|c_{0})\pi(a_0|\pmb{\gamma}_0)$
+\end{center}
+where $\pmb{\gamma}_0$ is a specified vector of hyperparameters. A natural choice for $\pi(a_0|\pmb{\gamma}_0)$ is a \color{orange} beta prior\color{black}. 
+\end{frame}
+
+\section{Bayesian Parametric Models}
+\begin{frame}
+\frametitle{Exponential Model}
+Consider event times $X_i \overset{iid}{\sim} Expo(\lambda)$ for $i = 1, \ldots, n$. 
+
+Define:
+\begin{itemize}
+\item$X_i$: time on study for observation $i$
+\item $\delta_i$: event indicator for observation $i$ ($=0$ if right censored, $=1$ if event observed)
+\item $T_i:$ time to event for observation $i$ (if $\delta_i = 1$, $X_i = T_i$)
+\item $C_i:$ time to right censoring for observation $i$ (if $\delta_i = 0$, $X_i = C_i$)
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Exponential Model: Likelihood}
+\begin{eqnarray*}
+L(\lambda|\text{data}) &=& \prod_{i=1}^{n} f(x_i|\lambda)^{\delta_i}S(x_i|\lambda)^{1-\delta_i} \\
+&=& \prod_{i=1}^{n} (\lambda \exp\{-\lambda x_i\})^{\delta_i}(\exp\{-\lambda x_i\})^{1-\delta_i} \\
+&=& (\lambda \exp\{-\lambda x_i\})^{\sum_{i=1}^{n}\delta_i}(\exp\{-\lambda x_i\})^{n-\sum_{i=1}^{n}\delta_i} \\
+&=& (\lambda^{\sum_{i=1}^{n}\delta_i} \exp\{-\sum_{i=1}^{n}\delta_i\lambda x_i\})(\exp\{-(n-\sum_{i=1}^{n}\delta_i)\lambda x_i\}) \\
+&=& \lambda^{d}\exp\{-\lambda \sum_{i=1}^{n}x_i\} \text{ where we let }d = \sum_{i=1}^{n}\delta_i
+\end{eqnarray*}
+\end{frame}
+
+\begin{frame}
+\frametitle{Exponential Model: Prior Distribution}
+For exponential event times, the conjugate prior is the gamma distribution: $\lambda \sim Gamma(\alpha_0, \lambda_0)$ with density
+$$\pi(\lambda|\alpha_0,\lambda_0) \propto \lambda^{\alpha_0-1}exp\{-\lambda_0 \cdot \lambda\}.$$
+\end{frame}
+
+\begin{frame}
+\frametitle{Exponential Model: Posterior Distribution}
+Based on this prior, we have posterior distribution for $\lambda$
+\begin{eqnarray*}
+\pi(\lambda|\text{data}) &\propto& L(\lambda|\text{data}) \pi(\lambda|\alpha_0,\lambda_0) \\
+&\propto& \left(\lambda^{\sum_{i=1}^n \delta_i} \exp\left\{-\lambda \sum_{i=1}^n x_i \right\} \right) \left(\lambda^{\alpha_0-1}\exp(-\lambda_0\lambda) \right) \\
+&\propto& \lambda^{\alpha_0+d - 1}\exp\left\{-\lambda(\lambda_0 + \sum_{i=1}^n x_i ) \right\}
+\end{eqnarray*}
+We recognize this as a \color{orange}$Gamma(\alpha_0 + d, \lambda_0 + \sum_{i=1}^{n}x_i)$ \color{black}distribution. 
+\end{frame}
+
+\begin{frame}
+\frametitle{Exponential Model: Posterior Mean and Variance}
+Based on the posterior distribution $\lambda|\text{data} \sim Gamma(\alpha_0 + d, \lambda_0 + \sum_{i=1}^{n}x_i)$ we have the following estimates for the mean and variance of the parameter $\lambda$ in $X_i \sim Expo(\lambda)$.
+\begin{itemize}
+\item $\text{E}(\lambda|\text{data}) = \frac{\alpha_0 + d}{\lambda_0 + \sum_{i=1}^n x_i}$
+\item $\text{Var}(\lambda|\text{data}) = \frac{\alpha_0 + d}{(\lambda_0 + \sum_{i=1}^n x_i)^2}$
+\end{itemize} 
+\end{frame}
+
+\section{Bayesian Semiparametric Models}
+\begin{frame}
+
+\end{frame}
+
+\section{Questions}
+\begin{frame}[c]
+\begin{center}
+\Huge
+Questions? 
+\end{center}
 \end{frame}
 
 \section{References}
 \begin{frame}
 \frametitle{References}
 \begin{enumerate}
-\item Ibrahim, Joseph George, et al. Bayesian Survival Analysis. Springer, 2010.
-\item Yildirim, Ilker. Bayesian Inference: Gibbs Sampling. 2012, Bayesian Inference: Gibbs Sampling.
+\item[1] Ibrahim, Joseph George, et al. Bayesian Survival Analysis. Springer, 2010.
+\item[2] Yildirim, Ilker. Bayesian Inference: Gibbs Sampling. 2012, Bayesian Inference: Gibbs Sampling.
 \end{enumerate}
 \end{frame}
 
