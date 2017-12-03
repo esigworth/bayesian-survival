@@ -1,0 +1,37 @@
+\documentclass[]{article}
+
+\usepackage{graphicx,anysize,amsfonts,amsmath,amsthm,amssymb,subfigure,enumerate,hyperref,color,setspace,booktabs,enumitem,listings}
+\usepackage[latin1]{inputenc}
+\usepackage[font = Large]{caption}
+\usepackage[mathscr]{euscript}
+
+\newenvironment{solution}
+  {\renewcommand\qedsymbol{$\blacksquare$}\begin{proof}[Solution]}
+  {\end{proof}}
+\newcommand\SLASH{\char`\\}
+\newcommand{\csch}{\text{csch}}
+%\marginsize{0.5in}{1in}{0.5in}{1in}
+\renewcommand{\baselinestretch}{1.5}
+
+\hypersetup{hidelinks}
+
+% Title Page: Modify as needed
+\title{BIOS 7361: Exercise Set 7}
+\author{Elizabeth Sigworth}
+\date{November 8, 2017}
+
+\begin{document}
+\maketitle
+
+\begin{eqnarray*}
+\pi(\lambda|\text{data}) &\propto& L(\lambda|\text{data}) \pi(\lambda|\alpha_0,\lambda_0) \\
+&\propto& \left(\lambda^{\sum_{i=1}^n \delta_i} \exp\left\{-\lambda \sum_{i=1}^n x_i \right\} \right) \left(\lambda^{\alpha_0-1}\exp(-\lambda_0\lambda) \right) \\
+&\propto& \lambda^{\alpha_0+d - 1}\exp\left\{-\lambda(\lambda_0 + \sum_{i=1}^n x_i ) \right\}
+\end{eqnarray*}
+
+$\text{Var}(\lambda|\text{data}) = \frac{\alpha_0 + d}{(\lambda_0 + \sum_{i=1}^n x_i)^2}$
+
+
+
+
+\end{document}
